@@ -33,4 +33,5 @@ public class PropertiesConstants {
     public static final String MYSQL_PASSWORD = "mysql.password";
     public static final String MYSQL_PORT = "mysql.port";
     public static final String MYSQL_USERNAME = "mysql.username";
+    public static final String MYSQL_JDBC_URL = "mysql.jdbc.url";
 }

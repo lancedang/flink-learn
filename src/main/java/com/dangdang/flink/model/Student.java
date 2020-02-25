@@ -6,6 +6,16 @@ public class Student {
     public String password;
     public int age;
 
+    public String flag;
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
     public int getId() {
         return id;
     }

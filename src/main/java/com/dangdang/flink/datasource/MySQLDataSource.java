@@ -34,12 +34,7 @@ public class MySQLDataSource {
 
         String[] fieldNames = new String[]{"id", "name", "password", "age"};
 
-        String jdbcUrl = "jdbc:mysql://" + parameterTool.get(PropertiesConstants.MYSQL_HOST)
-                + ":"
-                + parameterTool.getInt(PropertiesConstants.MYSQL_PORT) +
-                "/"
-                + parameterTool.get(PropertiesConstants.MYSQL_DATABASE)
-                + "?characterEncoding=utf8";
+        String jdbcUrl = parameterTool.get(PropertiesConstants.MYSQL_JDBC_URL);
 
         log.info(jdbcUrl);
 
