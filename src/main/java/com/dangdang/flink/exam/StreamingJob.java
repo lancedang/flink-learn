@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.dangdang.flink;
+package com.dangdang.flink.exam;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;

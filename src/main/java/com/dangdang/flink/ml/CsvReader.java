@@ -4,6 +4,8 @@ package com.dangdang.flink.ml;
 
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.api.java.tuple.Tuple;
+import org.apache.flink.ml.common.LabeledVector;
 
 /**
  * @author qiankai07
@@ -21,7 +23,8 @@ public class CsvReader {
                 .fieldDelimiter(",")
                 .ignoreFirstLine()
                 .pojoType(CsvData.class, "x", "y");
-
         csvDataDataSource.print();
+
+
     }
 }

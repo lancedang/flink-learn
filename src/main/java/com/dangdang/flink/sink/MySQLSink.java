@@ -1,0 +1,96 @@
+package com.dangdang.flink.sink;
+
+import com.dangdang.flink.model.Student;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+public class MySQLSink extends RichSinkFunction<Student> {
+
+    private static final Logger log = LoggerFactory.getLogger(MySQLSink.class);
+
+    PreparedStatement ps;
+    BasicDataSource dataSource;
+    private Connection connection;
+
+    /**
+     * open() 方法中建立连接，这样不用每次 invoke 的时候都要建立连接和释放连接
+     *
+     * @param parameters
+     * @throws Exception
+     */
+    @Override
+    public void open(Configuration parameters) throws Exception {
+        super.open(parameters);
+        dataSource = new BasicDataSource();
+        connection = getConnection(dataSource);
+        String sql = "insert into student_2(id, name, password, age) values(?, ?, ?, ?);";
+        if (connection != null) {
+            ps = this.connection.prepareStatement(sql);
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+        super.close();
+        //关闭连接和释放资源
+        if (connection != null) {
+            connection.close();
+        }
+        if (ps != null) {
+            ps.close();
+        }
+    }
+
+    /**
+     * 每条数据的插入都要调用一次 invoke() 方法
+     *
+     * @param value
+     * @param context
+     * @throws Exception
+     */
+    @Override
+    public void invoke(Student value, Context context) throws Exception {
+        if (ps == null) {
+            return;
+        }
+        //遍历数据集合
+        Student student = value;
+        //for (Student student : value) {
+            ps.setInt(1, student.getId());
+            ps.setString(2, student.getName());
+            ps.setString(3, student.getPassword());
+            ps.setInt(4, student.getAge());
+            ps.addBatch();
+        //}
+        int[] count = ps.executeBatch();//批量后执行
+        log.info("成功了插入了 {} 行数据", count.length);
+    }
+
+
+    private static Connection getConnection(BasicDataSource dataSource) {
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        //注意，替换成自己本地的 mysql 数据库地址和用户名、密码
+        dataSource.setUrl("jdbc:mysql://localhost:3306/flink_demo");
+        dataSource.setUsername("root");
+        dataSource.setPassword("abc123456");
+        //设置连接池的一些参数
+        dataSource.setInitialSize(10);
+        dataSource.setMaxTotal(50);
+        dataSource.setMinIdle(2);
+
+        Connection con = null;
+        try {
+            con = dataSource.getConnection();
+            log.info("创建连接池：{}", con);
+        } catch (Exception e) {
+            log.error("-----------mysql get connection has exception , msg = {}", e.getMessage());
+        }
+        return con;
+    }
+}
