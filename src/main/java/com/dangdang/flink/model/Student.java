@@ -57,4 +57,9 @@ public class Student {
         this.password = password;
         this.age = age;
     }
+
+    @Override
+    public String toString() {
+        return "student{id=" + id + ", name=" + name + "}";
+    }
 }
